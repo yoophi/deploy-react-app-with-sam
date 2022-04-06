@@ -41,7 +41,7 @@ Outputs:
     Value: !GetAtt HtmlBundleProxyFunction.Arn
   HtmlBundleProxyFunctionLogGroupName:
     Description: "HTML Proxy Lambda Function LogGroup Name"
-    Value: !Join [ "/", ["aws", "lambda", !Ref HtmlBundleProxyFunction]]
+    Value: !Join [ "/", ["", "aws", "lambda", !Ref HtmlBundleProxyFunction]]
 
   HtmlBundleProxyFunctionIamRole:
     Description: "Implicit IAM Role created for HTML Proxy function"
