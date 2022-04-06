@@ -1,6 +1,27 @@
-import json
+import mimetypes
+import zipfile
 
-# import requests
+NOT_FOUND = {"statusCode": 404, "body": "Not Found"}
+TEXT_TYPES = [".css", "html", ".js", ".json", ".map", ".svg", ".txt"]
+
+
+def to_bundle_path(path: str):
+    if path.endswith("/"):
+        path = path + "index.html"
+
+    while path.startswith("/"):
+        path = path[1:]
+
+    return path
+
+
+def mime_header(name):
+    mimetypes.init()
+    mime_type, _ = mimetypes.guess_type(name)
+    if not mime_type:
+        mime_type = "application/octet-stream"
+
+    return {"Content-Type": mime_type}
 
 
 def lambda_handler(event, context):
@@ -25,20 +46,21 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
+    path = event.get("path")
+    if not path:
+        return NOT_FOUND
 
-    #     raise e
+    bundle = zipfile.ZipFile("html-bundle.zip", mode="r")
+    bundle_path = to_bundle_path(path)
+    if bundle_path not in bundle.namelist():
+        return NOT_FOUND
+
+    headers = mime_header(bundle_path)
+    to_base64 = not any([bundle_path.endswith(ext) for ext in TEXT_TYPES])
 
     return {
         "statusCode": 200,
-        "body": json.dumps({
-            "message": "hello world",
-            "path": event.get('path'),
-            "resource": event.get('resource'),
-            # "location": ip.text.replace("\n", "")
-        }),
+        "headers": headers,
+        "body": bundle.read(bundle_path).decode("utf-8"),
+        "isBase64Encoded": to_base64,
     }
