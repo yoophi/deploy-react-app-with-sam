@@ -28,6 +28,20 @@ Resources:
           Properties:
             Path: /{path+}
             Method: get
+  SampleAPIFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: sample_api/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Events:
+        AnyAPIPath:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/{path+}
+            Method: any
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -39,6 +53,9 @@ Outputs:
   HtmlBundleProxyFunction:
     Description: "HTML Proxy Lambda Function ARN"
     Value: !GetAtt HtmlBundleProxyFunction.Arn
+  SampleAPIFunction:
+    Description: "Sample API Function ARN"
+    Value: !GetAtt SampleAPIFunction.Arn
   HtmlBundleProxyFunctionLogGroupName:
     Description: "HTML Proxy Lambda Function LogGroup Name"
     Value: !Join [ "/", ["", "aws", "lambda", !Ref HtmlBundleProxyFunction]]

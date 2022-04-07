@@ -1,7 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import logo from "./logo.svg";
 
 function App() {
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_PUBLIC_URL}/api/hello-world`)
+      .then((res) => {
+        setMessage(res.data.message);
+      });
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
@@ -15,7 +26,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Hello React
+          {message}
         </a>
       </header>
     </div>
