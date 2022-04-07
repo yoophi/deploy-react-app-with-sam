@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import logo from "./logo.svg";
+import pic from "./i-can-do-it.jpg";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -28,6 +29,11 @@ function App() {
         >
           {message}
         </a>
+        <img
+          src={pic}
+          style={{ width: 128, height: 128, marginTop: 8 }}
+          alt="pic"
+        />
       </header>
     </div>
   );

@@ -9,6 +9,14 @@ Globals:
     Timeout: 3
 
 Resources:
+  SampleApiGateway:
+    Type: "AWS::Serverless::Api"
+    Properties:
+      StageName: Prod
+      BinaryMediaTypes:
+        - application~1octet-stream
+        - image~1*
+
   HtmlBundleProxyFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -21,11 +29,13 @@ Resources:
         Index:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref SampleApiGateway
             Path: /
             Method: get
         AnyPath:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref SampleApiGateway
             Path: /{path+}
             Method: get
   SampleAPIFunction:
@@ -40,6 +50,7 @@ Resources:
         AnyAPIPath:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref SampleApiGateway
             Path: /api/{path+}
             Method: any
 
@@ -47,9 +58,12 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HtmlBundleProxyApi:
+  SampleApiGateway:
     Description: "API Gateway endpoint URL for Prod stage for HTML Proxy function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${SampleApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  SampleApiGatewayId:
+    Description: 'API Gateway ARN for SampleApiGateway'
+    Value: !Ref SampleApiGateway
   HtmlBundleProxyFunction:
     Description: "HTML Proxy Lambda Function ARN"
     Value: !GetAtt HtmlBundleProxyFunction.Arn
@@ -59,7 +73,6 @@ Outputs:
   HtmlBundleProxyFunctionLogGroupName:
     Description: "HTML Proxy Lambda Function LogGroup Name"
     Value: !Join [ "/", ["", "aws", "lambda", !Ref HtmlBundleProxyFunction]]
-
   HtmlBundleProxyFunctionIamRole:
     Description: "Implicit IAM Role created for HTML Proxy function"
     Value: !GetAtt HtmlBundleProxyFunctionRole.Arn
