@@ -1,3 +1,4 @@
+import base64
 import mimetypes
 import zipfile
 
@@ -58,9 +59,14 @@ def lambda_handler(event, context):
     headers = mime_header(bundle_path)
     to_base64 = not any([bundle_path.endswith(ext) for ext in TEXT_TYPES])
 
+    if to_base64:
+        body = base64.b64encode(bundle.read(bundle_path))
+    else:
+        body = bundle.read(bundle_path).decode("utf-8")
+
     return {
         "statusCode": 200,
         "headers": headers,
-        "body": bundle.read(bundle_path).decode("utf-8"),
+        "body": body,
         "isBase64Encoded": to_base64,
     }
