@@ -1,5 +1,26 @@
 # deploy-react-app-with-sam
 
+React App 을 간단하게 AWS SAM 을 이용해서 배포하는 예제입니다.
+
+`sample-react-app` 의 build + bundle된 zip 파일을 생성합니다. (이 때 `PUBLIC_URL` 값이 stage 값에 맞게 설정되어야 합니다)
+
+```
+# cd PROJECT_DIR
+cd sample-react-app
+npm install
+PUBLIC_URL=/Prod npm run build:bundle
+```
+
+SAM cli 를 이용해 배포합니다.
+
+```sh
+# cd PROJECT_DIR
+sam build
+sam deploy --guided
+```
+
+----
+
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
 - hello_world - Code for the application's Lambda function.
